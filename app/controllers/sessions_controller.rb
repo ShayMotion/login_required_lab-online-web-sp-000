@@ -1,31 +1,24 @@
 class SessionsController < ApplicationController
-  # before_action :require_login
+
+  def hello
+    @user = current_user
+  end
 
   def new
   end
 
   def create
-    # binding.pry
-    name = params[:name]
-    if session[:name]
-      redirect_to "/secrets/show"
-    elsif name && name != ""
-      session[:name] = name
-      redirect_to "/secrets/show"
+    if params[:name].nil? || params[:name].empty?
+      redirect_to '/login'
     else
-      redirect_to "/sessions/new"
+      session[:name] = params[:name]
+      redirect_to root_path
     end
   end
 
   def destroy
-    if current_user
-      session[:name] = nil
-    end
+    reset_session if session[:name]
+    redirect_to login_path
   end
 
-  private
-
-  def require_login
-    return head(:forbidden) unless session.include? :name
-  end
 end
